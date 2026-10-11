@@ -3,6 +3,7 @@
 /** definiciones de constantes, variables y estructuras para MenosC. Los    **/
 /** alumnos deberan adaptarlo al desarrollo de su propio compilador.    **/
 /*****************************************************************************/
+#include <stdio.h>
 #ifndef _HEADER_H
 #define _HEADER_H
 

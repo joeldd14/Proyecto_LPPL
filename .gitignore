@@ -1,0 +1,8 @@
+# Archivos generados por Flex y Bison
+/alex.c
+/asin.c
+/include/asin.h
+
+# Archivos de compilación
+/*.o
+/cmc

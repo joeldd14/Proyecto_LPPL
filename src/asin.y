@@ -5,7 +5,7 @@
 #include "header.h"
 %}
 
-%token PARA_ PARC_ MAS_ MENOS_ POR_ DIV_
+%token MAS_ MENOS_ POR_ DIV_
 %token CTE_ 
 
 %token ASIG_ NOT_ IGUAL_ DESIGUAL_ AND_ OR_
@@ -27,7 +27,7 @@ term   : term POR_ fac
        | term DIV_ fac   
        | fac             
        ;
-fac    : PARA_ exp PARC_ 
+fac    : AP_ exp CP_ 
        | CTE_            
        ;
 %%

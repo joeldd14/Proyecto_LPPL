@@ -6,3 +6,6 @@
 # Archivos de compilación
 /*.o
 /cmc
+
+# Archivos de texto
+*.txt

@@ -19,7 +19,8 @@
 ----------------------------------------------------------------------*/
 %option yylineno
 
-delimitador     [ \t\n]+
+delimitador     [ \t\r]+
+saltoLinea      [\n]
 digito          [0-9]
 entero          {digito}+
 letra           [a-zA-Z]
@@ -30,7 +31,13 @@ numero          ({entero}|{real})
 
 %%
 
-{delimitador}   {if (verbosidad) ECHO ; }
+{delimitador} { if (verbosidad) ECHO; }
+{saltoLinea} {
+    if (verbosidad) {
+        ECHO;
+        fprintf(yyout, "%3d.- ", yylineno);
+    }
+}
 "+"             { retornar (MAS_) ;}
 "-"             { retornar (MENOS_) ; }
 "*"             { retornar (POR_) ; }
@@ -70,5 +77,5 @@ numero          ({entero}|{real})
 {numero}        { retornar (CTE_) ; }
 {comentario}    { if (verbosidad) ECHO ; }
 {identificador}   {retornar (ID_) ;}
-.				{ yyerror("Caracter desconocido") ;}
+. { if (verbosidad) ECHO; yyerror("Caracter desconocido"); }
 %%

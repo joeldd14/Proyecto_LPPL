@@ -32,11 +32,15 @@ numero          ({entero}|{real})
 %%
 
 {delimitador} { if (verbosidad) ECHO; }
-{saltoLinea} {
+{saltoLinea}/(.|\n) {
     if (verbosidad) {
         ECHO;
         fprintf(yyout, "%3d.- ", yylineno);
     }
+}
+
+{saltoLinea} {
+    if (verbosidad) ECHO;
 }
 "+"             { retornar (MAS_) ;}
 "-"             { retornar (MENOS_) ; }

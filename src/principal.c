@@ -6,7 +6,8 @@
 #include <string.h>
 #include "header.h"
 
-int verbosidad = FALSE;                    /* Si se desea una traza o no     */
+int verTdS = FALSE;                        /* Flag para mostrar la TDS       */
+int verbosidad = FALSE;                    /* Flag si se desea una traza     */
 int numErrores = 0;                        /* Contador del numero de errores */
 /*****************************************************************************/
 void yyerror(const char * msg)
@@ -22,6 +23,7 @@ int main (int argc, char **argv)
 
   for (i=1; i<argc; ++i) { 
     if (strcmp(argv[i], "-v")==0) { verbosidad = TRUE; n++; }
+    else if (strcmp(argv[i], "-t")==0) { verTdS = TRUE; n++; }
   }
   if (argc == n+1) {
     if ((yyin = fopen (argv[n], "r")) == NULL) {

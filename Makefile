@@ -5,13 +5,14 @@
 # Directorios de trabajo
 SRCDIR = src
 INCDIR = include
+LIBDIR = lib
 # Opciones de compilacion
 COPT = -Wall
-CLIB = -lfl
+CLIB = -lfl -ltds
 OBJS = ./alex.o  ./asin.o ./principal.o 
 #
-cmc:	$(OBJS)
-	gcc  $(OBJS)  -I$(INCDIR)  $(COPT)  $(CLIB) -o cmc
+cmc:	$(OBJS) $(LIBDIR)/libtds.a
+	gcc $(OBJS) -I$(INCDIR) -L$(LIBDIR) $(COPT) $(CLIB) -o cmc
 principal.o: $(SRCDIR)/principal.c
 	gcc  -I$(INCDIR) $(COPT) -c $(SRCDIR)/principal.c
 asin.o:	asin.c

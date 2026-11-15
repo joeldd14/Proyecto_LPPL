@@ -26,8 +26,18 @@
 
 %%
 
-programa : listDecla
-         ;
+programa :
+    {
+        niv = 0;
+        dvar = 0;
+        cargaContexto(niv);
+    }
+    listDecla
+    {
+        if (verTdS)
+            mostrarTdS();
+    }
+    ;
 
 listDecla : decla
           | listDecla decla
@@ -38,6 +48,12 @@ decla : declaVar
       ;
 
 declaVar : tipoSimp ID_ PCOMA_
+         {
+             if (!insTdS($2, VARIABLE, $1, niv, dvar, -1))
+                 yyerror("Identificador repetido");
+             else
+                 dvar += TALLA_TIPO_SIMPLE;
+         }
          | tipoSimp ID_ ASIG_ const PCOMA_
          | tipoSimp ID_ AC_ CTE_ CC_ PCOMA_
          ;

@@ -2,10 +2,12 @@
 /**  Ejemplo de BISON-I: S E M - 2          <jbenedi@dsic.upv.es>   V.24    **/
 /*****************************************************************************/
 %{
+#include <stdlib.h>
+#include <string.h>
 #include "header.h"
 #include "asin.h"
 
-#define  retornar(x) {if (verbosidad) ECHO ; return (x) ; }
+#define retornar(x) {if (verbosidad) ECHO ; return (x) ; }
 %}
 /*----------------------------------------------------------------------
   Dado que las funciones "input()" y "unput(c)" son costosas y no las
@@ -78,8 +80,14 @@ numero          ({entero}|{real})
 "equal"         { retornar (EQUAL_) ; }
 "greater"       { retornar (GREATER_) ; }
 "read"          { retornar (READ_) ; }
-{numero}        { retornar (CTE_) ; }
+{numero} {
+    yylval.cent = atoi(yytext);
+    retornar(CTE_);
+}
 {comentario}    { if (verbosidad) ECHO ; }
-{identificador}   {retornar (ID_) ;}
+{identificador} {
+    yylval.ident = strdup(yytext);
+    retornar(ID_);
+}
 . { if (verbosidad) ECHO; yyerror("Caracter desconocido"); }
 %%

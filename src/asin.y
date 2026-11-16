@@ -11,6 +11,10 @@ static int dvarGlobal;
 %union {
     char *ident;   /* Nombre del identificador */
     int cent;      /* Valor de la constante numerica entera */
+    struct{
+        int ref;   /*Referencia al dominio*/
+        int num;   /*Numero de parametros*/
+    } param;
 }
 
 %token MAS_ MENOS_ POR_ DIV_
@@ -26,7 +30,8 @@ static int dvarGlobal;
 
 %type <cent> tipoSimp
 %type <cent> const
-%type <cent> listParamForm
+%type <cent> paramForm
+%type <param> listParamForm
 
 %%
 
@@ -116,24 +121,32 @@ declaFunc : tipoSimp ID_
           ;
 
 paramForm : /* vacío */
+          {
+            $$ = insTdD(-1, T_VACIO);
+          }
           | listParamForm
+          {
+            $$ = $1.ref;
+          }
           ;
 
 listParamForm : tipoSimp ID_
               {
+                  $$.ref = insTdD(-1, $1);
+                  $$.num = 1;
+
                   if (!insTdS($2, PARAMETRO, $1, niv,
                               -TALLA_SEGENLACES - 1, -1))
                       yyerror("Identificador repetido");
-
-                  $$ = 1;
               }
               | tipoSimp ID_ COMA_ listParamForm
               {
-                  if (!insTdS($2, PARAMETRO, $1, niv,
-                              -TALLA_SEGENLACES - 1 - $4, -1))
-                      yyerror("Identificador repetido");
+                  $$.ref = insTdD($4.ref, $1);
+                  $$.num = $4.num + 1;
 
-                  $$ = $4 + 1;
+                  if (!insTdS($2, PARAMETRO, $1, niv,
+                              -TALLA_SEGENLACES - $$.num * TALLA_TIPO_SIMPLE, -1))
+                      yyerror("Identificador repetido");
               }
               ;
 

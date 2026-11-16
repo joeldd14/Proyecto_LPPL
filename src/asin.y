@@ -4,6 +4,8 @@
 %{
 #include "header.h"
 #include "libtds.h"
+
+static int dvarGlobal;
 %}
 
 %union {
@@ -23,6 +25,7 @@
 %token <ident> ID_
 
 %type <cent> tipoSimp
+%type <cent> const
 
 %%
 
@@ -55,19 +58,60 @@ declaVar : tipoSimp ID_ PCOMA_
                  dvar += TALLA_TIPO_SIMPLE;
          }
          | tipoSimp ID_ ASIG_ const PCOMA_
+              {
+                  if ($1 != $4)
+                      yyerror("Error de tipos en la inicializacion");
+
+                  if (!insTdS($2, VARIABLE, $1, niv, dvar, -1))
+                      yyerror("Identificador repetido");
+                  else
+                      dvar += TALLA_TIPO_SIMPLE;
+              }
          | tipoSimp ID_ AC_ CTE_ CC_ PCOMA_
+              {
+                  if ($4 <= 0) {
+                      yyerror("El tamaño del vector debe ser positivo");
+                  }
+                  else {
+                      int ref = insTdA($1, $4);
+
+                      if (!insTdS($2, VARIABLE, T_ARRAY, niv, dvar, ref))
+                          yyerror("Identificador repetido");
+                      else
+                          dvar += $4 * TALLA_TIPO_SIMPLE;
+                  }
+              }
          ;
 
-const : CTE_
-      | TRUE_
-      | FALSE_
+const : CTE_   { $$ = T_ENTERO; }
+      | TRUE_  { $$ = T_LOGICO; }
+      | FALSE_ { $$ = T_LOGICO; }
       ;
 
 tipoSimp : INT_   { $$ = T_ENTERO; }
          | BOOL_  { $$ = T_LOGICO; }
          ;
 
-declaFunc : tipoSimp ID_ AP_ paramForm CP_ bloque
+declaFunc : tipoSimp ID_
+            {
+                dvarGlobal = dvar;
+                niv = 1;
+                dvar = 0;
+                cargaContexto(niv);
+            }
+            AP_ paramForm CP_
+            {
+                /* Pendiente: registrar la función */
+            }
+            AL_ declaVarLocal listInst RETURN_ expre PCOMA_ CL_
+            {
+                if (verTdS)
+                    mostrarTdS();
+
+                descargaContexto(niv);
+                niv = 0;
+                dvar = dvarGlobal;
+            }
           ;
 
 paramForm : /* vacío */
@@ -78,8 +122,6 @@ listParamForm : tipoSimp ID_
               | tipoSimp ID_ COMA_ listParamForm
               ;
 
-bloque : AL_ declaVarLocal listInst RETURN_ expre PCOMA_ CL_
-       ;
 
 declaVarLocal : /* vacío */
               | declaVarLocal declaVar

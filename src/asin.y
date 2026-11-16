@@ -119,7 +119,21 @@ paramForm : /* vacío */
           ;
 
 listParamForm : tipoSimp ID_
+              {
+                  if (!insTdS($2, PARAMETRO, $1, niv,
+                              -TALLA_SEGENLACES - 1, -1))
+                      yyerror("Identificador repetido");
+
+                  $$ = 1;
+              }
               | tipoSimp ID_ COMA_ listParamForm
+              {
+                  if (!insTdS($2, PARAMETRO, $1, niv,
+                              -TALLA_SEGENLACES - 1 - $4, -1))
+                      yyerror("Identificador repetido");
+
+                  $$ = $4 + 1;
+              }
               ;
 
 

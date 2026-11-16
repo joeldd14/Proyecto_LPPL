@@ -26,6 +26,7 @@ static int dvarGlobal;
 
 %type <cent> tipoSimp
 %type <cent> const
+%type <cent> listParamForm
 
 %%
 
